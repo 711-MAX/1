@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>左宗棠：西域风云</title>
+    <style>
+        /* 全局样式重置与基础设置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SimSun", "宋体", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f5f0e6;
+            color: #2d2319;
+            line-height: 1.8;
+        }
+
+        /* 场景容器：所有场景默认隐藏，仅激活当前场景 */
+        .scene {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        /* 标题样式 */
+        .game-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            font-size: 42px;
+            color: #8b4513;
+            margin-bottom: 10px;
+        }
+
+        .sub-title {
+            font-size: 20px;
+            color: #5a3e2b;
+            font-style: italic;
+        }
+
+        /* 配图样式 */
+        .scene-img {
+            display: block;
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            margin: 25px auto;
+            border: 8px solid #e8dccb;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 剧情文本样式 */
+        .story-content {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 16px;
+            padding: 20px;
+            background-color: #fff8e7;
+            border-radius: 8px;
+            border: 1px solid #d4b996;
+            margin-bottom: 30px;
+        }
+
+        .story-title {
+            font-size: 24px;
+            color: #8b4513;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8dccb;
+        }
+
+        .attr-status {
+            font-weight: bold;
+            color: #6b4226;
+            margin: 10px 0;
+        }
+
+        /* 选项框样式 */
+        .options-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            padding: 18px 25px;
+            background-color: #e8dccb;
+            border: 2px solid #b99b7b;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-btn:hover {
+            background-color: #d4b996;
+            border-color: #8b4513;
+            transform: translateY(-2px);
+        }
+
+        .option-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 属性栏样式（固定左侧） */
+        .attr-panel {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 220px;
+            padding: 20px;
+            background-color: #e8dccb;
+            border-radius: 8px;
+            border: 2px solid #b99b7b;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .attr-panel-title {
+            font-size: 18px;
+            color: #8b4513;
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #b99b7b;
+        }
+
+        .attr-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .attr-name {
+            color: #5a3e2b;
+        }
+
+        .attr-value {
+            font-weight: bold;
+            color: #8b4513;
+        }
+
+        /* 按钮样式（通用操作按钮） */
+        .action-buttons {
+            max-width: 800px;
+            margin: 30px auto;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            background-color: #8b4513;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #6b3210;
+            transform: translateY(-2px);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 反馈信息样式 */
+        .feedback-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #dff0d8;
+            border: 1px solid #b6e09b;
+            border-radius: 8px;
+            color: #3c763d;
+            display: none;
+        }
+
+        .feedback-container.active {
+            display: block;
+        }
+
+        /* 历史拓展模块样式 */
+        .history-expansion {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 18px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            color: #8a6d3b;
+            display: none;
+        }
+
+        .history-expansion.active {
+            display: block;
+        }
+
+        .history-title {
+            font-weight: bold;
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        .history-btn {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10px;
+            text-align: center;
+            color: #8b4513;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* 结局页面样式 */
+        .ending-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fff8e7;
+            border-radius: 12px;
+            border: 2px solid #d4b996;
+            text-align: center;
+        }
+
+        .ending-title {
+            font-size: 36px;
+            color: #8b4513;
+            margin-bottom: 20px;
+        }
+
+        .ending-desc {
+            font-size: 18px;
+            line-height: 2;
+            margin-bottom: 30px;
+        }
+
+        /* 成就徽章样式 */
+        .achievements-container {
+            max-width: 800px;
+            margin: 30px auto;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .achievement-badge {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: #e8dccb;
+            border: 2px solid #b99b7b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #5a3e2b;
+        }
+
+        /* 响应式适配（小屏幕隐藏左侧属性栏，改为顶部显示） */
+        @media (max-width: 1024px) {
+            .attr-panel {
+                position: static;
+                transform: none;
+                width: 100%;
+                max-width: 800px;
+                margin: 0 auto 30px auto;
+            }
+
+            .scene {
+                padding-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧属性面板 -->
+    <div class="attr-panel">
+        <div class="attr-panel-title">当前属性</div>
+        <div class="attr-item">
+            <span class="attr-name">国库资金：</span>
+            <span class="attr-value" id="treasury">500 万两</span>
+        </div>
+        <div class="attr-item">
+            <span class="attr-name">军队士气：</span>
+            <span class="attr-value" id="morale">50</span>
+        </div>
+        <div class="attr-item">
+            <span class="attr-name">民心向背：</span>
+            <span class="attr-value" id="popularity">0</span>
+        </div>
+        <div class="attr-item">
+            <span class="attr-name">朝廷信任度：</span>
+            <span class="attr-value" id="trust">50</span>
+        </div>
+        <div class="attr-item">
+            <span class="attr-name">国家版图：</span>
+            <span class="attr-value" id="territory">0</span>
+        </div>
+    </div>
+
+    <!-- 场景1：游戏首页 -->
+    <div class="scene active" id="scene-home">
+        <div class="game-title">
+            <h1 class="main-title">左宗棠：西域风云</h1>
+            <h2 class="sub-title">晚清危局下的“争”与“不争”</h2>
+        </div>
+        <img src="https://img95.699pic.com/photo/00045/7690.jpg_wh860.jpg" alt="左宗棠画像" class="scene-img">
+        <div class="action-buttons">
+            <button class="action-btn" onclick="switchScene('scene-guide')">开始游戏</button>
+        </div>
+    </div>
+
+    <!-- 场景2：引导页 -->
+    <div class="scene" id="scene-guide">
+        <div class="story-content">
+            <h3 class="story-title">开场导语</h3>
+            <p>【背景叙述】</p>
+            <p>公元1874年，清王朝风雨飘摇。</p>
+            <p>东南海疆，日本侵台，李鸿章高呼“海防优先”；</p>
+            <p>西北边疆，阿古柏窃据新疆，沙俄虎视眈眈。</p>
+            <p>国库空虚，经费拮据，朝廷陷入了“保海防”还是“保塞防”的两难抉择。</p>
+            <p>你，将化身晚清重臣左宗棠，</p>
+            <p>面对这盘生死棋局，你该如何落子？</p>
+            <p>是寸土必争，还是暂弃边疆？</p>
+            <p>你的每一个选择，都将改写中国的历史版图。</p>
+            <br>
+            <p><strong>玩法说明</strong>：请根据剧情提示，点击选项框做出你的选择。</p>
+            <p><strong>属性栏</strong>：左侧显示当前的【国库资金】、【军队士气】、【民心向背】及【朝廷信任度】。</p>
+            <p>小贴士：有些胜利，不在于寸土必争，而在于懂得何时该争，何时该让。</p>
+        </div>
+        <img src="https://img0.baidu.com/it/u=309093164,2075152275&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=500" alt="晚清朝堂全景" class="scene-img">
+        <div class="action-buttons">
+            <button class="action-btn" onclick="switchScene('scene-level1')">进入第一关</button>
+            <button class="action-btn" onclick="resetGame()">回到起点</button>
+        </div>
+    </div>
+
+    <!-- 场景3：第一关 - 庙算之争 -->
+    <div class="scene" id="scene-level1">
+        <div class="story-content">
+            <h3 class="story-title">第一关：庙算之争 (1874年·北京)</h3>
+            <p>【剧情背景】</p>
+            <p>军机处会议上，李鸿章力主“海防优先”，认为新疆是“千里荒漠，徒增负担”。慈禧太后犹豫不决，询问你的意见。</p>
+            <br>
+            <p class="attr-status">初始状态：国库资金 500万两 | 朝廷信任度 50</p>
+            <br>
+            <p>【剧情叙述】</p>
+            <p>李鸿章言辞激烈：“新疆旷野，收复亦难守，不如专顾海防，弃车保帅！”</p>
+            <p>满朝文武默然。你深知新疆若失，蒙古难保，京城将无险可守。你必须站出来反驳。</p>
+        </div>
+        <img src="https://img2.baidu.com/it/u=2670607329,3877932207&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=450" alt="北京军机处" class="scene-img">
+        <div class="options-container">
+            <div class="option-btn" onclick="chooseOption('level1', 'A')">
+                A. 据理力争，呈上《复陈海防塞防及关外剿抚粮运情形折》<br>
+                <small>文案：详细阐述“重新疆者，所以保蒙古，保蒙古者，所以卫京师”的地缘战略。</small>
+            </div>
+            <div class="option-btn" onclick="chooseOption('level1', 'B')">
+                B. 委婉进言，先谈海防之急，再徐徐图之<br>
+                <small>文案：为了避免与李鸿章正面冲突，试图通过妥协来换取部分军费。</small>
+            </div>
+            <div class="option-btn" onclick="chooseOption('level1', 'C')">
+                C. 激昂陈词，若不收复新疆，愿辞官归田<br>
+                <small>文案：以去留力争，展示死战的决心。</small>
+            </div>
+        </div>
+        <div class="feedback-container" id="feedback-level1"></div>
+        <div class="history-btn" onclick="toggleHistory('history-level1')">？查看历史真相</div>
+        <div class="history-expansion" id="history-level1">
+            <div class="history-title">【地缘战略】</div>
+            <p>左宗棠认为，新疆不仅是资源宝库，更是蒙古高原的屏障。如果新疆丢了，蒙古不保，那么北京的西大门就彻底打开了，国家安全将无从谈起。</p>
+        </div>
+        <div class="action-buttons" style="display: none;" id="btn-next-level1">
+            <button class="action-btn" onclick="switchScene('scene-level2')">进入第二关</button>
+            <button class="action-btn" onclick="saveProgress()">保存进度</button>
+        </div>
+    </div>
+
+    <!-- 场景4：第二关 - 粮草之困 -->
+    <div class="scene" id="scene-level2">
+        <div class="story-content">
+            <h3 class="story-title">第二关：粮草之困 (1875年·兰州)</h3>
+            <p>【剧情背景】</p>
+            <p>大军西征，粮草先行。但从内地运往西北的粮草，沿途消耗巨大，民夫不堪重负，逃散者甚多。</p>
+            <br>
+            <p>【剧情叙述】</p>
+            <p>幕僚急报：“大人，运粮队尚未出发，民夫已逃散三成。若强行征发，恐激起民变。”</p>
+            <p>此时，你面临一个艰难的选择：是强征民夫，还是另寻他法？</p>
+        </div>
+        <img src="https://img1.baidu.com/it/u=160525012,3869337092&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=450" alt="兰州运粮队" class="scene-img">
+        <div class="options-container">
+            <div class="option-btn" onclick="chooseOption('level2', 'A')">
+                A. 强征民夫，军令如山，误了战机谁来负责？<br>
+                <small>文案：严令地方官府征调民夫，限期运粮。</small>
+            </div>
+            <div class="option-btn" onclick="chooseOption('level2', 'B')">
+                B. 以工代赈，提高工钱，招募自愿民夫<br>
+                <small>文案：虽然会消耗大量军费，但能安抚民心，且民夫更有干劲。</small>
+            </div>
+            <div class="option-btn" onclick="chooseOption('level2', 'C')">
+                C. 就地屯垦，一边打仗，一边种粮<br>
+                <small>文案：效仿汉代赵充国，在河西走廊大规模屯田。</small>
+            </div>
+        </div>
+        <div class="feedback-container" id="feedback-level2"></div>
+        <div class="history-btn" onclick="toggleHistory('history-level2')">？查看历史真相</div>
+        <div class="history-expansion" id="history-level2">
+            <div class="history-title">【左公柳】</div>
+            <p>左宗棠命令军队逢路必树，路旁最少栽一行，多至四五行。这不仅是为了限戎马之足，更是为了巩固路基，为后人留下阴凉。后人称之为“左公柳”。</p>
+        </div>
+        <div class="action-buttons" style="display: none;" id="btn-next-level2">
+            <button class="action-btn" onclick="switchScene('scene-level3')">进入第三关</button>
+            <button class="action-btn" onclick="saveProgress()">保存进度</button>
+        </div>
+    </div>
+
+    <!-- 场景5：第三关 - 民生之策 -->
+    <div class="scene" id="scene-level3">
+        <div class="story-content">
+            <h3 class="story-title">第三关：民生之策 (1876年·肃州大营)</h3>
+            <p>【剧情背景】</p>
+            <p>大军即将出关，但西北连年战乱，百姓流离失所。有人建议为了军费，应严加征税；也有人建议大兴土木，安抚流民。</p>
+            <br>
+            <p>【剧情叙述】</p>
+            <p>账房先生愁眉苦脸：“大人，军费已经捉襟见肘，若再减免赋税，恐怕将士们连军饷都发不出了。”</p>
+            <p>你看着营外饥寒交迫的流民，心中默念：“军事是盾，民生是根。”</p>
+        </div>
+        <img src="https://img95.699pic.com/photo/00038/2661.jpg_wh860.jpg" alt="肃州大营流民" class="scene-img">
+        <div class="options-container">
+            <div class="option-btn" onclick="chooseOption('level3', 'A')">
+                A. 减免赋税，开仓放粮，先安民心<br>
+                <small>文案：即便军费紧张，也要先让百姓活下去。</small>
+            </div>
+            <div class="option-btn" onclick="chooseOption('level3', 'B')">
+                B. 维持现状，只管打仗，不管民事<br>
+                <small>文案：战争第一，等收复了失地再谈民生。</small>
+            </div>
+            <div class="option-btn" onclick="chooseOption('level3', 'C')">
+                C. 勒紧裤腰带，军民一起吃苦<br>
+                <small>文案：官员士绅带头减薪，与民共渡难关。</small>
+            </div>
+        </div>
+        <div class="feedback-container" id="feedback-level3"></div>
+        <div class="action-buttons" style="display: none;" id="btn-next-level3">
+            <button class="action-btn" onclick="switchScene('scene-level4')">进入第四关</button>
+            <button class="action-btn" onclick="saveProgress()">保存进度</button>
+        </div>
+    </div>
+
+    <!-- 场景6：第四关 - 伊犁之局 -->
+    <div class="scene" id="scene-level4">
+        <div class="story-content">
+            <h3 class="story-title">第四关：伊犁之局 (1881年·谈判桌)</h3>
+            <p>【剧情背景】</p>
+            <p>虽然收复了除伊犁外的新疆全境，但沙俄仍占据伊犁。朝廷派崇厚签订辱国条约，你力主“先战后和”，抬棺出征。</p>
+            <br>
+            <p>【剧情叙述】</p>
+            <p>你已部署大军三路进逼伊犁，抬着棺材表明死战决心。此时，沙俄因克里米亚战争后国力虚弱，外交官暗示愿意谈判。</p>
+            <p>朝廷发来密旨，询问是“一战到底”还是“见好就收”。</p>
+        </div>
+        <img src="https://img1.baidu.com/it/u=3449918220,2051900292&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=450" alt="左宗棠抬棺出征" class="scene-img">
+        <div class="options-container">
+            <div class="option-btn" onclick="chooseOption('level4', 'A')">
+                A. 死磕到底，收复伊犁每一寸土地，拒绝任何谈判<br>
+                <small>文案：不收复全境，誓不收兵！</small>
+            </div>
+            <div class="option-btn" onclick="chooseOption('level4', 'B')">
+                B. 妥协退让，接受赔款，换取沙俄撤军<br>
+                <small>文案：为了大局，暂时接受不平等条约。</small>
+            </div>
+            <div class="option-btn" onclick="chooseOption('level4', 'C')">
+                C. 军事施压，外交博弈，收回主权但承担部分通商条件<br>
+                <small>文案：利用军事优势，在谈判桌上争取最大利益。</small>
+            </div>
+        </div>
+        <div class="feedback-container" id="feedback-level4"></div>
+        <div class="history-btn" onclick="toggleHistory('history-level4')">？查看历史真相</div>
+        <div class="history-expansion" id="history-level4">
+            <div class="history-title">【棋局典故】</div>
+            <p>传说左宗棠出征前遇一老棋手，三战三胜。凯旋后却三战三败。老棋手解释：“出征前让你赢，是为你增自信；凯旋后让你输，是为你去骄气。”这正是“争与不争”的处世智慧。</p>
+        </div>
+        <div class="action-buttons" style="display: none;" id="btn-next-level4">
+            <button class="action-btn" onclick="calculateEnding()">查看结局</button>
+            <button class="action-btn" onclick="saveProgress()">保存进度</button>
+        </div>
+    </div>
+
+    <!-- 场景7：结局页面 -->
+    <div class="scene" id="scene-ending">
+        <div class="ending-container">
+            <h2 class="ending-title" id="ending-title"></h2>
+            <p class="ending-desc" id="ending-desc"></p>
+        </div>
+        <img src="https://img2.baidu.com/it/u=2295096618,3807758926&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=450" alt="新疆全景与左公柳" class="scene-img">
+        <div class="achievements-container" id="achievements-container"></div>
+        <div class="action-buttons">
+            <button class="action-btn" onclick="resetGame()">回到起点，重新抉择</button>
+            <button class="action-btn" onclick="shareGame()">分享给好友，看他能否收复新疆？</button>
+            <button class="action-btn" onclick="loadProgress()">读取存档</button>
+        </div>
+    </div>
+
+    <script>
+        // 全局游戏数据
+        let gameData = {
+            treasury: 500,    // 国库资金（万两）
+            morale: 50,       // 军队士气
+            popularity: 0,    // 民心向背
+            trust: 50,        // 朝廷信任度
+            territory: 0,     // 国家版图
+            currentScene: 'scene-home', // 当前场景
+            achievements: []  // 成就列表
+        };
+
+        // 场景切换函数
+        function switchScene(targetSceneId) {
+            // 隐藏当前激活的场景
+            document.querySelector('.scene.active').classList.remove('active');
+            // 显示目标场景
+            document.getElementById(targetSceneId).classList.add('active');
+            // 更新当前场景记录
+            gameData.currentScene = targetSceneId;
+        }
+
+        // 选项选择处理函数
+        function chooseOption(level, option) {
+            const feedbackEl = document.getElementById(`feedback-${level}`);
+            const nextBtnEl = document.getElementById(`btn-next-${level}`);
+            let feedbackText = '';
+
+            // 重置反馈和按钮状态
+            feedbackEl.classList.remove('active');
+            nextBtnEl.style.display = 'none';
+
+            // 根据关卡和选项更新数据
+            switch (level) {
+                case 'level1':
+                    if (option === 'A') {
+                        gameData.trust += 20;
+                        gameData.treasury += 500;
+                        feedbackText = '你呈上的奏折条理清晰，逻辑严密。慈禧太后终于被打动，下令拨款500万两作为西征经费。<br>【朝廷信任度 +20】<br>【国库资金 +500万两】';
+                    } else if (option === 'B') {
+                        gameData.trust += 5;
+                        gameData.treasury += 200;
+                        feedbackText = '你委婉的进言避免了与李鸿章的正面冲突，慈禧太后同意拨款200万两，但对收复新疆的决心仍有疑虑。<br>【朝廷信任度 +5】<br>【国库资金 +200万两】';
+                    } else if (option === 'C') {
+                        gameData.trust += 15;
+                        gameData.morale += 10;
+                        feedbackText = '你的激昂陈词打动了满朝文武，慈禧太后为你的决心所感，暂时同意支持西征，但拨款仅有300万两。<br>【朝廷信任度 +15】<br>【军队士气 +10】';
+                    }
+                    break;
+
+                case 'level2':
+                    if (option === 'A') {
+                        gameData.morale += 5;
+                        gameData.popularity -= 15;
+                        feedbackText = '你严令地方官府征调民夫，运粮队如期出发，但沿途民怨沸腾，多处发生小规模民变。<br>【军队士气 +5】<br>【民心向背 -15】';
+                    } else if (option === 'B') {
+                        gameData.popularity += 15;
+                        gameData.treasury -= 100;
+                        feedbackText = '你决定“以工代赈”，虽然军费开支大增，但沿途百姓感念恩德，纷纷踊跃报名。运粮队士气高昂，粮草顺利运抵前线。<br>【民心向背 +15】<br>【国库资金 -100万两】';
+                    } else if (option === 'C') {
+                        gameData.treasury -= 50;
+                        gameData.popularity += 10;
+                        feedbackText = '你下令在河西走廊屯田，短期内解决了部分粮草问题，也安抚了当地流民，为长期西征奠定了基础。<br>【民心向背 +10】<br>【国库资金 -50万两】';
+                    }
+                    break;
+
+                case 'level3':
+                    if (option === 'A') {
+                        gameData.popularity += 30;
+                        gameData.treasury -= 50;
+                        feedbackText = '你下令开仓放粮，减免灾区赋税。百姓奔走相告，称你为“左青天”。许多青壮年主动要求加入运粮队，支援前线。<br>【民心向背 +30】<br>【国库资金 -50万两】<br>【旁白】：你选择了在民生上“不争”，却赢得了最宝贵的民心。';
+                    } else if (option === 'B') {
+                        gameData.morale += 5;
+                        gameData.popularity -= 10;
+                        feedbackText = '你专注于战争，暂时搁置民生问题，军费得到保障，大军如期出关，但沿途百姓对清军颇有微词。<br>【军队士气 +5】<br>【民心向背 -10】';
+                    } else if (option === 'C') {
+                        gameData.morale += 10;
+                        gameData.popularity += 5;
+                        gameData.treasury -= 30;
+                        feedbackText = '你带头减薪，号召军民共渡难关，将士们士气大振，百姓也颇为感动，愿意暂时忍受艰难。<br>【军队士气 +10】<br>【民心向背 +5】<br>【国库资金 -30万两】';
+                    }
+                    break;
+
+                case 'level4':
+                    if (option === 'A') {
+                        gameData.morale += 20;
+                        gameData.treasury -= 300;
+                        gameData.territory += 1;
+                        feedbackText = '你下令大军强攻伊犁，沙俄军队虽顽强抵抗，但最终不敌清军，伊犁全境收复。但清军也付出了惨重代价，军费消耗巨大。<br>【军队士气 +20】<br>【国库资金 -300万两】<br>【国家版图 +1（伊犁）】';
+                        gameData.achievements.push('抬棺出征');
+                    } else if (option === 'B') {
+                        gameData.trust += 10;
+                        gameData.treasury -= 200;
+                        gameData.territory += 0.5;
+                        feedbackText = '你接受了沙俄的赔款要求，付出200万两白银后，沙俄撤出伊犁。虽然收复了领土，但也背负了辱国的骂名。<br>【朝廷信任度 +10】<br>【国库资金 -200万两】<br>【国家版图 +0.5（伊犁）】';
+                    } else if (option === 'C') {
+                        gameData.trust += 50;
+                        gameData.territory += 1;
+                        gameData.treasury -= 150;
+                        feedbackText = '你在做好战争准备的同时，支持曾纪泽赴俄谈判。最终，中国收回了伊犁九城的主权，虽然付出了部分赔款，但避免了全面战争。<br>【朝廷信任度 +50】<br>【国库资金 -150万两】<br>【国家版图 +1（伊犁）】';
+                        gameData.achievements.push('抬棺出征');
+                    }
+                    break;
+            }
+
+            // 更新属性面板显示
+            updateAttrPanel();
+
+            // 显示反馈信息和下一步按钮
+            feedbackEl.innerHTML = feedbackText;
+            feedbackEl.classList.add('active');
+            nextBtnEl.style.display = 'flex';
+        }
+
+        // 更新属性面板显示
+        function updateAttrPanel() {
+            document.getElementById('treasury').textContent = `${gameData.treasury} 万两`;
+            document.getElementById('morale').textContent = gameData.morale;
+            document.getElementById('popularity').textContent = gameData.popularity;
+            document.getElementById('trust').textContent = gameData.trust;
+            document.getElementById('territory').textContent = gameData.territory;
+        }
+
+        // 切换历史拓展显示/隐藏
+        function toggleHistory(historyId) {
+            const historyEl = document.getElementById(historyId);
+            historyEl.classList.toggle('active');
+        }
+
+        // 保存进度到本地存储
+        function saveProgress() {
+            localStorage.setItem('zuoZongTangGameData', JSON.stringify(gameData));
+            alert('进度保存成功！');
+        }
+
+        // 读取本地存储的进度
+        function loadProgress() {
+            const savedData = localStorage.getItem('zuoZongTangGameData');
+            if (savedData) {
+                gameData = JSON.parse(savedData);
+                updateAttrPanel();
+                switchScene(gameData.currentScene);
+                alert('进度读取成功！');
+            } else {
+                alert('暂无保存的进度！');
+            }
+        }
+
+        // 重置游戏（回到初始状态）
+        function resetGame() {
+            gameData = {
+                treasury: 500,
+                morale: 50,
+                popularity: 0,
+                trust: 50,
+                territory: 0,
+                currentScene: 'scene-home',
+                achievements: []
+            };
+            updateAttrPanel();
+            // 隐藏所有反馈和历史拓展
+            document.querySelectorAll('.feedback-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.history-expansion').forEach(el => el.classList.remove('active'));
+            // 隐藏所有下一步按钮
+            document.querySelectorAll('[id^="btn-next-"]').forEach(el => el.style.display = 'none');
+            switchScene('scene-home');
+        }
+
+        // 计算并显示结局
+        function calculateEnding() {
+            const endingTitleEl = document.getElementById('ending-title');
+            const endingDescEl = document.getElementById('ending-desc');
+            const achievementsContainerEl = document.getElementById('achievements-container');
+
+            // 判定民心成就
+            if (gameData.popularity >= 45) {
+                gameData.achievements.push('左公柳');
+            }
+
+            // 去重成就列表
+            const uniqueAchievements = [...new Set(gameData.achievements)];
+
+            // 结局判定逻辑
+            let endingTitle = '';
+            let endingDesc = '';
+
+            if (gameData.treasury >= 600 && gameData.popularity >= 45 && gameData.trust >= 120 && gameData.territory >= 1) {
+                // 完美结局
+                endingTitle = '千古完臣';
+                endingDesc = '你完美复刻了左宗棠的智慧！<br>你懂得在核心利益（主权）上寸步不让，在非核心利益（赔款、短期支出）上灵活变通。<br>你不仅收复了166万平方公里的国土，更留下了“左公柳”的绿荫。<br>“身无半亩，心忧天下”，你做到了！';
+                uniqueAchievements.push('经世致用');
+            } else if (gameData.treasury >= 300 && gameData.popularity >= 20 && gameData.trust >= 70 && gameData.territory >= 0.5) {
+                // 普通结局
+                endingTitle = '中流砥柱';
+                endingDesc = '你保住了国家的基本盘，但留下了遗憾。<br>历史证明，如果在战略上稍有退缩，国家的防线就会步步后退。<br>左宗棠曾说：“我朝定鼎燕都，蒙部环卫北方，若新疆不固，则蒙部不安。”<br>下次，试着更坚定一些吧！';
+            } else {
+                // 失败结局
+                endingTitle = '千古罪人';
+                endingDesc = '你的决策导致了国家的分裂。<br>由于军费耗尽或民心丧失，新疆未能收复。<br>此后百年，京城无宁日，中华民族的生存空间被极度压缩。<br>“能受天磨真铁汉”，看来这副重担，还需要你再历练一番。';
+            }
+
+            // 渲染结局内容
+            endingTitleEl.textContent = endingTitle;
+            endingDescEl.innerHTML = endingDesc;
+
+            // 渲染成就徽章
+            achievementsContainerEl.innerHTML = '';
+            const uniqueFinalAchievements = [...new Set(uniqueAchievements)];
+            uniqueFinalAchievements.forEach(achievement => {
+                const badgeEl = document.createElement('div');
+                badgeEl.className = 'achievement-badge';
+                badgeEl.innerHTML = `<strong>${achievement}</strong>`;
+                achievementsContainerEl.appendChild(badgeEl);
+            });
+
+            // 切换到结局场景
+            switchScene('scene-ending');
+        }
+
+        // 分享游戏（调用浏览器分享API）
+        function shareGame() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '左宗棠：西域风云',
+                    text: '我在《左宗棠：西域风云》中复刻了晚清重臣的智慧，你也来试试能否收复新疆！',
+                    url: window.location.href
+                }).catch(err => {
+                    console.log('分享失败：', err);
+                    alert('分享失败，请手动复制链接分享！');
+                });
+            } else {
+                alert('你的浏览器不支持分享功能，请手动复制链接分享！');
+            }
+        }
+    </script>
+</body>
+</html>
